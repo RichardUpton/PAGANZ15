@@ -1,0 +1,557 @@
+---
+title: "Physiological Pharmacokinetic Models: Principles"
+author: Richard Upton
+date: January 28, 2015
+output: 
+   ioslides_presentation:
+      css: assets\css\slidify.css
+      widescreen: false
+      smaller: false
+      logo: images\unisa_logo.jpg
+      mathjax: local
+      self_contained: false
+      keep_md: true
+   
+
+---
+## What is a PBPK model?    
+
+
+```{r setup, cache = F, echo = F, message = F, warning = F}
+# make this an external chunk that can be included in any file
+#options(width = 70)
+#opts_chunk$set(message = F, error = F, warning = F, echo = F, comment = NA, fig.align = 'center', dpi = 100, fig.height = 4.5, fig.width = 8, tidy = F, fig.path = 'fig/', cache = FALSE, cache.path = '.cache/')
+#require(ggplot2);
+require(xtable)
+options(xtable.type = 'html')
+
+source("Rcode/global.R")
+```
+
+**A physiologically based pharmacokinetic (PBPK) model:**   
+  
+* Represents drug kinetics in one or more "real" organs    
+* Requires a sub-model of the organ/tissue   
+* Describes "whole body" kinetics by joining together organ submodels    
+* Drug transport is by blood flow as dictated by anatomy    
+* Attempts to reproduce a "real" physiological and/or pharmacokinetic processes   
+* Parameters may be "intrinsic" covariates (e.g. weight)    
+
+
+
+## History - Price, 1960, Thiopental   
+<br>
+<div class="columns-2">
+
+![price1](images/price1.png) 
+
+![price2](images/price2.png) 
+
+</div>
+
+<br>
+<h4>
+Price, Anesthesiology 1960; 21:40-450
+</h4>   
+
+
+
+## History - Price, 1960, Thiopental    
+
+<center>
+![price3](images/price3.png)
+</center>
+
+
+<h4>
+Price, Anesthesiology 1960; 21:40-450
+</h4> 
+
+
+
+## History - Benowitz, 1974, Lidocaine    
+<br>
+<center>
+![benowitz](images/benowitz_search.png)
+</center>
+
+
+
+## History - Benowitz, 1974, Lidocaine   
+Conscious Monkeys    
+Flow by radioactive microspheres (?)   
+Tissue concentrations by gas chromatography (?)   
+<center>
+![rowland](images/rowland.jpg)
+</center>
+
+
+##PBPK vs Mamillary Compartment models 
+
+* PBPK and Mamillary models are made from "compartments"
+* A compartment is a region assumed to have uniform kinetics.
+* A sample taken from the compartment is representative of the rest of the compartment   
+
+
+
+##Mamillary Compartment Models
+  
+**Pros**  
+  
+* Origin in chemical kinetic methods    
+* Laplace transforms for analytical solutions   
+* Population PK  
+  
+**Cons**  
+  
+* Empirical  
+* Compartment models are not identifiable!  
+* What do the compartments represent?  
+* Why are some patients 1 comp and some 2 comp?  
+* How do physiological processes relate to the model?  
+
+
+
+## The Rise of the PBPK models?
+Commerical PBPK software:  PK-Sim,  SimCyp,  GastroPlus  
+
+<br>
+<div class="columns-2">
+
+![GastroPlus](images/Gastroplus_logo.jpg)
+![PK-Sim](images/PK-Sim_logo.jpg)  
+![SimCyp](images/SimCyp_logo.jpg)   
+
+</div>
+
+
+
+## Getting PK Data
+**Tissue concentrations**  
+  
+* Animals mostly  
+* Post mortem (only 1 time-point per animal)  
+* Microdialysis  
+
+**Regional venous concentrations**  
+  
+* Humans and animals  
+* Sampling via implanted catheters  
+* Many time point per subjects  
+* Many sites per subject  
+
+
+
+##Mather, 1981, Chlormethiazole
+  
+* An historic paper  
+* Chlormethizaole - a sedative (amongst other things!)  
+* Opportunistic regional venous sampling in radiological patients  
+* Plasma samples by gas chromatography  
+* _In vivo_ measurement of:  
+    + Hepatic extraction ratio  
+    + Renal extraction ratio  
+    + Pulmonary extraction ratio  
+
+<h4>
+Mather et al., Br. J. Clin. Pharmac. (1981), 12, 319-325
+</h4>
+
+
+
+##Mather, 1981, Chlormethiazole
+<center>
+![mather](images/CTZ_table.png)
+</center>
+
+
+
+## Getting Blood-flow Data  
+
+**Databases**  
+P3M  http://www.thelifelinegroup.org/p3m/  
+
+**Publications**  
+"Standard Man" http://en.wikipedia.org/wiki/Standard_person  
+Price, Crit Rev Toxicol 33(5):469-503  
+  
+**Direct measurement**  
+Microspheres  
+Flow probes  
+Ultrasound (Transcranial Doppler)  
+Tracer kinetics  
+Imaging  
+
+
+
+## The Basic Maths  
+
+<div style="font-size: 90%;">  
+$$
+  {\sf Rate = Concentration . Flow }\\   
+  {\sf J = C . Q }\\   
+  {\sf mg/min = mg/L . L/min }\\     
+$$
+
+$$
+  {\sf Concentration = Rate/Flow }\\     
+  {\sf C = J/Q }\\    
+  {\sf mg/L = (mg/min)/(L/min) }\\    
+$$
+
+$$
+  {\sf Amount = Concentration . Volume }\\    
+  {\sf A = C . V }\\    
+  {\sf mg = mg/L . L }\\    
+$$
+
+</div>
+
+
+
+## Start with a single organ
+Isolated perfused lung, liver, heart etc...  
+
+<center>
+![isolatedperfused](images/isolated_perfused_lung.jpg)
+</center>
+
+
+
+## Adding drug to a blood flow    
+Consider a single blood vessel with flow Q and a constant rate infusion R~0~
+
+<center>
+![blood](images/blood.png)  
+</center>
+
+<div style="font-size: 120%; color: black">  
+$$
+  {\sf  C_{art}=\frac{R_{0}}{Q} }  \\
+$$
+</div>
+
+
+
+
+## Organs as a differential equations  
+Flow-limited distribution      
+
+<center>
+![flowlimited](images/flow_limited.png)
+</center>
+
+<div style="font-size: 75%; color: black">  
+$$
+   {\sf  amount = \int_0^t \left( rate_{in} - rate_{out} \right) }\\
+   {\sf   amount = \int_0^t \left( Q . C_{art} - Q . C_{ven} \right) }\\
+   {\sf   \frac{dA}{dt} = \left( Q . C_{art} - Q . C_{ven}  \right) }\\
+   {\sf   \frac{dC_{ven}}{dt} = \left( Q . C_{art} - Q . C_{ven}  \right)/V }\\
+$$
+</div>
+
+
+
+##  Flow-limited distribution   
+Square wave arterial concentration input (C~art~, red)  
+Organ venous concentration (C~ven~, blue)  
+
+```{r, echo=F}
+ 
+  sim_flowlimited(Rate=100,Tinf=10,lasttime=20,Q=20,V=20,CL=0)
+ 
+```
+
+
+
+##  Flow-limited distribution   
+Square wave arterial concentration input (C~art~, red)  
+Organ venous concentration (C~ven~, blue)  
+
+```{r, echo=F}
+ 
+  sim_flowlimited(Rate=50,Tinf=10,lasttime=20,Q=10,V=20,CL=0)
+ 
+```
+
+##  Flow-limited distribution  
+Square wave arterial concentration input (C~art~, red)  
+Organ venous concentration (C~ven~, blue)  
+
+```{r, echo=F}
+ 
+  sim_flowlimited(Rate=25,Tinf=10,lasttime=20,Q=5,V=20,CL=0)
+ 
+```
+
+
+## Organs as a differential equations  
+Membrane-limited distribution  
+PS is the permeability/surface area term (units of flow)
+
+<center>
+![flowlimited](images/memb_limited.png)  
+</center>
+
+<div style="font-size: 85%; color: black">  
+$$
+   {\sf   \frac{dA_1}{dt} = \left( Q.C_{art} -Q.C_{ven} -PS.C_{ven} +PS.C_{2} \right) }  \\
+   {\sf   \frac{dA_2}{dt} = \left( PS.C_{ven} -PS.C_{2}  \right) }  \\   
+$$
+</div>
+
+
+
+##  Membrane-limited distribution   
+Square wave arterial concentration input (C~art~, red)  
+Organ venous concentration (C~ven~, blue)  
+Organ "deep" concentration (C~2~, green)  
+
+```{r, echo=F}
+ 
+  sim_memblimited(Rate=100,Tinf=10,lasttime=20,Q=10,V1=20, PS=2, V2=50)
+ 
+```
+
+
+
+##  Membrane-limited distribution   
+Square wave arterial concentration input (C~art~, red)   
+Organ venous concentration (C~ven~, blue)   
+Organ "deep" concentration (C~2~, green)  
+
+```{r, echo=F}
+ 
+  sim_memblimited(Rate=100,Tinf=10,lasttime=20,Q=10,V1=20, PS=20, V2=50)
+ 
+```
+
+##  Membrane-limited distribution  
+Square wave arterial concentration input (C~art~, red)  
+Organ venous concentration (C~ven~, blue)   
+Organ "deep" concentration (C~2~, green)  
+
+```{r, echo=F}
+ 
+  sim_memblimited(Rate=100,Tinf=10,lasttime=20,Q=10,V1=20, PS=200, V2=50)
+ 
+```
+
+
+
+## Notes on membrane-limited distribution      
+
+* It's generally a mixture of flow and membrane limitation  
+* The "membrane" is drug/organ specific
+* It may be:
+    + Capillary wall (V~1~ is vascular volume) 
+    + Cell membrane  (V~1~ is extracellular volume) 
+    + Nuclear membrane  
+    + Unknown  
+
+
+
+## Organs as a differential equations  
+Flow-limited with elimination  
+
+<center>
+![flowlimitedelimination](images/flow_limited_elimination.png)
+</center>
+
+<div style="font-size: 75%; color: black">  
+$$
+    {\sf  amount = \int_0^t \left( rate_{in} - rate_{out} \right) }\\
+    {\sf  amount = \int_0^t \left( Q*C_{art} - Q*C_{ven} - CL*C_{art}\right) }\\
+    {\sf  \frac{dA}{dt} = \left( Q*C_{art} - Q*C_{ven} - CL*C_{art}  \right) }\\
+    {\sf  \frac{dC_{ven}}{dt} = \left( Q*C_{art} - Q*C_{ven} - CL*C_{art}  \right)/V }\\
+$$
+</div>
+
+
+
+##  Flow-limited with elimination  
+Square wave arterial concentration input (C~art~, red)  
+Organ venous concentration (C~ven~, blue)  
+
+```{r, echo=F}
+ 
+  sim_flowlimited(Rate=25,Tinf=60,lasttime=120,Q=5,V=20,CL=1)
+ 
+```
+
+
+
+##  Flow-limited with elimination  
+Square wave arterial concentration input (C~art~, red)  
+Organ venous concentration (C~ven~, blue)  
+
+```{r, echo=F}
+ 
+  sim_flowlimited(Rate=25,Tinf=60,lasttime=120,Q=5,V=20,CL=2)
+ 
+```
+
+
+
+##  Flow-limited with elimination  
+Square wave arterial concentration input (C~art~, red)  
+Organ venous concentration (C~ven~, blue)  
+
+```{r, echo=F}
+ 
+  sim_flowlimited(Rate=25,Tinf=60,lasttime=120,Q=5,V=20,CL=4)
+ 
+```
+
+
+
+## Clearance and Extraction ratio  {.flexbox .vcenter}  
+
+Clearance cannot exceed blood flow!  
+Extraction ratio (E) cannot be > 1
+
+<div style="font-size: 85%; color: black">  
+$$
+  {\sf  E = \frac{CL}{Q} }\\   
+  {\sf  E = 1-\frac{C_{ven}}{C_{art}} }\\      
+  {\sf  E = \frac{ \left( C_{art}-C_{ven} \right)}{C_{art}} }\\ 
+  {\sf  CL = Q.E }
+$$
+</div>
+
+
+
+## More complicated organ models    
+
+You made need...   
+**Well-stirred hepatic model**   
+Low extraction, protein bound drugs   
+
+<br>
+You probably will never use...   
+**Krough cylinder**   
+Convection & diffusion along a capillary   
+
+**Dispersion models**   
+Impulse response experiments in IPL   
+
+**Counter current models**   
+Highly diffusible compounds  
+
+
+
+## Joining organs together    
+
+* Most organs are in parallel  
+* Exceptions  
+    + Lung (Lung and Body are in series)  
+    + Gut (Gut and Liver are in series)  
+    + Pituitary (anyone?)  
+* Join organs together as dictated by anatomy & blood flow
+* Organs can be "pooled" or "lumped""
+* A whole body model is made by "book-keeping" the inputs and outputs of the individual organs
+
+
+##  A simple whole body model  
+Intravenous infusion administration  
+
+<center>
+![3comprecirc](images/3comprecirc.png)  
+</center>
+
+
+
+##  A simple whole body model  
+3 compartments, 3 differential equations  
+
+<br>
+<div style="font-size: 95%; color: black">  
+$$
+   {\sf      \frac{dA_1}{dt} = (RateInf -CO.A[1] +Qhep.A[2] +Qbody.A[3])/Vlung  }\\
+   {\sf      \frac{dA_2}{dt} = (Qhep.A[1] -Qhep.A[2] -CLhep.A[1])/Vhep  }\\
+   {\sf       \frac{dA_3}{dt} = (Qbody.A[1] -Qbody.A[3])/Vbody  }\\
+$$
+<div>
+
+##  A simple whole body model  
+C~art~ red; C~body~ blue; C~hep~ orange  
+Normal cardiac output  
+
+```{r, echo=F}
+ 
+  sim_3comp_recirc(Rate=100,Tinf=60,lasttime=400,CO=6,Qhep=2,CLhep=1,Vlung=2,Vhep=1,Vbody=25)
+ 
+```
+
+
+
+##  A simple whole body model  
+C~art~ red; C~body~ blue; C~hep~ orange  
+Lower cardiac ouput  
+```{r, echo=F}
+ 
+  sim_3comp_recirc(Rate=100,Tinf=60,lasttime=400,CO=3,Qhep=2,CLhep=1,Vlung=2,Vhep=1,Vbody=25)
+ 
+```
+
+
+
+##  A simple whole body model  
+C~art~ red; C~body~ blue; C~hep~ orange  
+Higher cardiac output  
+```{r, echo=F}
+ 
+  sim_3comp_recirc(Rate=100,Tinf=60,lasttime=400,CO=9,Qhep=2,CLhep=1,Vlung=2,Vhep=1,Vbody=25)
+ 
+```
+
+## The steady-state test    
+
+* Set your model up to return venous concentrations  
+* Run dose at constant rate to steady state  
+* Cart = Cven for all non-eliminating tissues  
+* E = CL/Q for eliminating tissue (usually)  
+* C~art,ss~ = Doserate/CL
+* Or solve analytically, set dA/dt = 0
+
+
+
+##  The steady-state test  
+C~art~ red; C~body~ blue; C~hep~ orange 
+
+```{r, echo=F}
+ 
+  sim_3comp_recirc(Rate=100,Tinf=2000,lasttime=2000,CO=6,Qhep=2,CLhep=1,Vlung=20,Vhep=1,Vbody=50)
+ 
+```
+
+
+## Top down vs Bottom up    
+<br>
+**Top down**  
+All information from the data...
+
+
+**Bottom up**  
+All information from known physiology...
+
+
+**Middle out**  
+Mix data and known physiology...
+
+
+
+##  Conclusions
+
+PBPK models come in all shapes and sizes  
+  
+Most are built using compartments and differential equations  
+  
+A few basic tools can build any PBPK model!  
+  
+Adapt the level of complexity to your project  
+  
+The hard part is collecting the data  
+
+The even harder part is parameterizing and validating the model!  
+
