@@ -1,0 +1,474 @@
+---
+title: 'Physiological Pharmacokinetic Models: Applications'
+author: "Richard Upton"
+date: "January 28, 2015"
+output:
+   ioslides_presentation:
+      css: assets\css\slidify.css
+      widescreen: false
+      smaller: false
+      logo: images\unisa_logo.jpg
+      mathjax: local
+      self_contained: false
+      keep_md: true
+ 
+---
+
+## Some Applications of PBPK models    
+
+
+```{r setup, cache = F, echo = F, message = F, warning = F}
+# make this an external chunk that can be included in any file
+#options(width = 70)
+#opts_chunk$set(message = F, error = F, warning = F, echo = F, comment = NA, fig.align = 'center', dpi = 100, fig.height = 4.5, fig.width = 8, tidy = F, fig.path = 'fig/', cache = FALSE, cache.path = '.cache/')
+#require(ggplot2);
+require(xtable)
+options(xtable.type = 'html')
+
+source("Rcode/global.R")
+```
+Examples from my own back catalogue:
+
+* **Interspecies scaling**  
+    Using animal data in a human model  
+
+* **Drugs that affect blood flow**  
+    Intravenous Magnesium
+
+* **Drugs that have a "target" organ**  
+    Propofol (Intravenous anaesthetic)  
+
+* **First-pass metabolites**
+    Leflunomide/Teriflunomide (RA)
+
+* **Effect of physiological changes/pathology**  
+    Predict the effect of aging on fentanyl kinetics
+
+
+
+# Interspecies scaling
+
+
+
+## First in Man: Animal to Human
+Typically mice, rats, dogs to man  
+
+**Compartmental models**  
+Scale volumes and clearances using allometric principles  
+Doesn't take into account differences in body composition  
+"Blurring" of clearance & volume (distribution or absorption masked as clearance)  
+
+**PBPK models**  
+Define model as physiological and pharmacological parameters  
+"Swap" the physiological parameters for a new species  
+Keep the pharmacological parameters the same  
+(or vice versa for predicting a new drug in the same species!)
+
+
+
+## PBPK model parameters
+
+**Physiological**  
+Organ size/volume  
+Organ blood flow  
+Organ composition (e.g. lipid content)  
+Organ enzyme contents  
+Haematocrit/plasma protein concentrations  
+
+**Pharmacological**  
+Partition coefficient  
+Free fraction  
+Kb values (binding)  
+
+Extraction ratio  
+Km values (enyzmes)  
+Intrinsic clearance  
+
+
+
+##  The Standard Sheep
+Example of physiological data from the literature
+
+<center>
+![stdsheep](images/standard_sheep_table.png)
+</center>
+
+<h4>
+Upton, J Pharmacol Toxicol Methods 2008; 58:198-205
+</h4>
+
+
+##  The Standard Pig
+
+<Center>
+![stdpig](images/standard_pig_table.png)
+</center>
+
+<h4>
+Upton, J Pharmacol Toxicol Methods 2008; 58:198-205
+</h4>
+
+
+
+##  Scaling body composition
+    
+
+Body composition varies with species  
+<br>
+**Sheep vs Pig**     
+   
+_Standard sheep_  
+17% fat and 28% muscle  
+Liver blood flow is 47% of cardiac output  
+  
+_Standard pig_  
+30% fat and 40% muscle  
+Liver blood flow is 30% of cardiac output  
+
+
+
+##  Scaling size within a species  
+
+Animals come in different sizes, even within a species  
+  
+To generate a simulated population:   
+_1.  Assume % body composition is the same_  
+_2.  Scale organ size relative to the standard size_  
+
+
+<div style="font-size: 90%;">  
+$$
+    {\sf OrganSize_{i} = OrganSize_{std}* \left( \frac{Weight_{i}}{Weight_{std}} \right)^1*N\left(1,0.08^2 \right)\\  }
+    {\sf OrganFlow_{i} = OrganFlow_{std}* \left( \frac{Weight_{i}}{Weight_{std}} \right)^{0.75}*N\left(1,0.15^2 \right) } \\  
+$$
+</div>
+
+<h4>
+Upton, J Pharmacol Toxicol Methods 2008; 58:198-205
+</h4>
+
+
+
+##  Scaling organ distribution  
+  
+Consider a membrane-limited model  
+Measured apparent distribution volumes (V~app~), permeabilty (PS) and blood flow (Q)  
+  
+Animal   |    | Man  
+----|-------|------  
+Dimensioned | Dimensionless |  Dimensioned  
+V~app,a~ (L)    | R = V~app,a~/V~real,a~ |  V~app,m~ = R.V~real,m~ (L)  
+PS~a~ (L/min)   | PSQ = PS~a~/Q~a~       | PS~m~ = PSQ.Q~m~ (L/min)  
+
+
+
+##  Scaling organ elimination  
+
+Measured organ clearance (CL) blood flow (Q)  
+<br>
+  
+Animal   |    | Man
+----|-------|------
+Dimensioned | Dimensionless |  Dimensioned  
+CL~a~ (L/min)    | E = CL~a~/Q~a~ |  CL~m~ = E.Q~m~ (L/min)
+
+
+
+##  A recirculatory model of fentanyl in man  {.flexbox .vcenter} 
+
+![fentrecirculatory](images/fentanyl_recirculatory.png)
+
+
+
+##  Scaling membrane limited distribution {.flexbox .vcenter}
+
+![fentmanparameters](images/fentanyl_man_parameters.png)
+
+<h4>
+Upton et al., J Pharmacokinetic Pharmacodyn 2012; 39: 561-76 
+</h4>
+
+
+
+##  A recirculatory model of fentanyl in man  {.flexbox .vcenter} 
+
+![fentrecirculatorytable](images/fentanyl_recirculatory_table.png)
+
+<h4>
+Upton et al., J Pharmacokinetic Pharmacodyn 2012; 39: 561-76 
+</h4>
+
+
+
+# Drugs that affect blood flow
+
+
+
+## Intravenous Magnesium
+<br>    
+
+Used for a number of diseases, including preeclampsia  
+  
+Relaxes smooth muscles in blood vessels  
+  
+* Lowers systemic vascular resistance  
+* Decreases mean arterial blood pressure  
+* Increases in cardiac output  
+  
+Dosing is often empirical, based on observed cardiovascular variables  
+
+
+##  Magnesium Pharmacokinetics
+<br>
+The clearance of magnesium is renal, but it can be reabsorbed or excreted in the
+tubules, as dictated by homeostatic requirements  
+  
+Predominant loss from blood is by cellular uptake.  This occurs in all tissues, and is potentially blood flow (cardiac output) dependent  
+  
+<center>  
+**The PK of Mg affects the PD**  
+<br>
+**The PD of Mg affects the PK**  
+</center>  
+
+
+
+##  A Study of Magnesium in Sheep
+
+A chronically instrumented sheep preparation  
+
+Training data set (30 mmol over 2 min)  
+
+Arterial blood samples for PK  
+
+**Cardiovascular measurements**  
+LVEDP -  Left ventricular end diastolic pressure  
+MAP   -  Mean arterial blood pressure  
+SVR   -  Systemic vascular resistance  
+CO    -  Cardiac output  
+HR    -  Heart Rate  
+SV    -  Stroke Volume  
+CNT   -  Contractility  
+
+
+
+##  Magnesium - Observed data {.flexbox .vcenter}
+3 = baseline; 2 = baseline/2; 4 = baseline.2
+
+![mgrawdata](images/Mg_rawdata.png)
+
+
+
+##  Magnesium - PD model {.flexbox .vcenter}
+A simple model of the cardiovascular system  
+Two "stressed" blood volumes, active pump, passive return
+
+![mgPDmodel](images/Mg_PD_model.png)
+
+<h4>
+Upton & Ludbrook, BMC Pharmacology 2005; 5:5, 10 Mar 
+</h4>
+
+##  Magnesium - PK model  {.flexbox .vcenter}
+A 2 compartment recirculatory model with CO as a parameter  
+Distribution into intracellular stores (PS)   
+
+![mgPKmodel](images/Mg_PK_model.png)
+
+
+
+##  Magnesium - PKPD model  {.flexbox .vcenter}
+Feedback between the PK and PD models via link functions  
+
+![mgPKPDmodel](images/Mg_PKPD_model.png)
+
+
+
+##  Magnesium - Observed vs Fitted {.flexbox .vcenter}
+
+![mgresults](images/Mg_results.png)
+
+
+
+##  Magnesium - Validation data {.flexbox .vcenter}
+Prediction of a validation data set (30 mmol over 5 min)  
+
+![mgvalidation](images/Mg_validation.png)
+
+
+
+# Drugs with "target" organs
+
+
+
+## Propofol
+* Intravenous anaesthetic  
+* GABA agonist (and other receptors)  
+* Depression of neuronal activity evident in the EEG  
+* Propofol concentration in the CNS determines the time-course of anaesthesia  
+ 
+<br>
+Why not include the target organ in a model of propofol kinetics?
+
+<br>
+<h4>
+Upton & Ludbrook, Anesthesiology 2005; 103:344-52  
+</h4>
+
+
+
+##  Propofol - Recirculatory Model {.flexbox .vcenter}
+
+![propofolrecirculatory](images/propofol_recirculatory.png)  
+
+
+
+
+##  Propofol - Lung Sub-model 
+ICG = concurrent intra-vascular marker  
+
+<center>
+![propofollungdata](images/propofol_lung_data.png)  
+</center>
+
+
+##  Propofol - Lung Sub-model
+Flow = Cardiac output (Q~co~)  
+Input = Pulmonary artery (C~pa~); Output = Aorta (C~art~)  
+
+<br>
+<center>
+![propofollungmodel](images/propofol_lung_model.png)  
+</center>
+
+
+##  Propofol - Brain Sub-model
+Input = Aorta (C~art~); Output = Jugular bulb (C~jug~)  
+BIS = Depth of anaesthesia  
+
+<center>
+![propofolbraindata](images/propofol_brain_data.png)  
+</center>
+
+
+##  Propofol - Brain Sub-model
+Membrane limited model  
+Feedback effect on cerebral blood flow  
+
+<center>
+![propofolbrainmodel](images/propofol_brain_model.png)  
+</center>
+
+
+## Standard Man to Population model
+
+This was NOT a population model!  
+Mean data, Standard Man physiology  
+Fitting in MATLAB & Simulink  
+Can you predict a population?  Maybe...
+
+<div style="font-size: 70%;">  
+$$
+     {\sf CO_{i} = 5.66* \left( \frac{Weight_{i}}{70} \right)^{0.41} * \left( 1.03 + 0.0295*\left( Age/30 \right)  + 0.0603*\left( Age/30 \right)^2 \right) }  \\ 
+ {\sf OrganSize_{i} = OrganSize_{std}* \left( \frac{Weight_{i}}{70} \right)^1 } \\       
+$$
+</div>
+
+Now predict arterial propofol concentrations for an extensive database of real patients!  
+
+##  The harsh reality
+"Performance of compartmental and physiologically-based, recirculatory pharmacokinetic models for propofol "  
+<center>
+![masuipropofolpredictions](images/masui_propofol_predictions.png)
+</center>
+
+<h4>
+Masui et al., Anesthesia and Analgesia 2010; 111: 368-79 
+</h4>
+
+
+
+# Oral dose first-pass metabolites
+
+
+
+## Leflunomide/Teriflunomide 
+undetectable parent, first-pass metabolism, blood-borne metabolism, extensive protein binding, entero-hepatic recycling, genetic influence on transporters & CYP's  
+
+<center>
+![ashmodel](images/Ash_leflunomide.png)
+
+<h4>
+Hopkins et al., 2015, under review  
+</h4>
+</center>
+
+
+
+# Effect of physiological changes/pathology  
+
+
+
+## Fentanyl in the elderly  
+
+You are a pharmacologist working in an Anaesthetic Department  
+
+**What happens to the kinetics of fentanyl in the elderly?**  
+**Why do you need 1/4 of the dose of a fit young person?**  
+
+The literature has no published model of fentanyl in the elderly  
+
+From first principles, what happens to drug kinetics when people age?  
+
+
+
+##  Physiology of aging {.flexbox .vcenter}
+
+![agetable](images/ageing_table.png)  
+
+<h4>
+MacIntyre, Clinical Pain Management-Acute, Edward Arnold, 2002 pp 463.  
+</h4>
+
+##  Modify this model for the elderly! {.flexbox .vcenter}
+
+
+![fent3comp](images/Fentanyl_3comp.png)  
+
+
+
+##  Modify this model for the elderly?
+
+<center>
+![fentPBPK](images/Fentanyl_PBPK.png)  
+</center>
+
+<h4>
+Bjorkman, J Pharmacokinet Biopharm. 1994; 22:381-410.   
+</h4>
+
+
+
+##  Conclusions
+
+Investigate models beyond the 1, 2 & 3 compartment mamillary  
+
+Make some (informed!) assumptions, or use data beyond arm venous plasma concentrations  
+
+Old data/papers may be valuable pieces of the puzzle  
+
+Learn software to solve differential equations  
+
+There is more work to do.  For example, how reliable is this equation for fit, healthy adults?  
+
+<div style="font-size: 100%;">  
+$$
+     {\sf LiverFlow_{i} = 1.5* \left( \frac{Weight_{i}}{70} \right)^{0.75}* \left( \frac{Age_{i}}{30} \right)^{x} } \\  
+$$
+</div>
+
+
+#  The End  
+
+
+
